@@ -9,25 +9,27 @@ import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.matcher.ResponseAwareMatcherComposer.and;
 
 public class UsuarioTest {
 
+    Usuario usuario;
+
     @BeforeAll
     public static void setupTest() {
         RestAssured.baseURI = "https://serverest.dev";
     }
 
+    @BeforeEach
+    public void before(){
+        usuario = getNewUser();
+    }
+
     @Test
     public void criarUsuarioComSucesso(){
-        Faker faker = new Faker();
-
-        Usuario usuario = new Usuario(
-                faker.name().fullName(),faker.internet().emailAddress(),
-                "teste123",
-                "true");
 
         Response response = RestAssured
                 .given()
@@ -47,12 +49,6 @@ public class UsuarioTest {
 
     @Test
     public void criarUsuarioDuplicadoSemSucesso(){
-        Faker faker = new Faker();
-
-        Usuario usuario = new Usuario(
-                faker.name().fullName(),faker.internet().emailAddress(),
-                "teste123",
-                "true");
 
         RestAssured
                 .given()
@@ -75,12 +71,6 @@ public class UsuarioTest {
 
     @Test
     public void BuscarUsuarioPorIdComSucesso() {
-        Faker faker = new Faker();
-
-        Usuario usuario = new Usuario(
-                faker.name().fullName(),faker.internet().emailAddress(),
-                "teste123",
-                "true");
 
         Response response = RestAssured
                 .given()
@@ -103,6 +93,14 @@ public class UsuarioTest {
                 .then()
                     .statusCode(HttpStatus.SC_OK)
                     .log().all();
+    }
+
+    public Usuario getNewUser(){
+        Faker faker = new Faker();
+        return new Usuario(
+                faker.name().fullName(),faker.internet().emailAddress(),
+                "teste123",
+                "true");
     }
 
 }
