@@ -7,8 +7,11 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import static io.restassured.matcher.ResponseAwareMatcherComposer.and;
 
 public class UsuarioTest {
 
@@ -26,7 +29,7 @@ public class UsuarioTest {
                 "teste123",
                 "true");
 
-        RestAssured
+        Response response = RestAssured
                 .given()
                     .contentType(ContentType.JSON)
                     .log().all()
@@ -35,7 +38,11 @@ public class UsuarioTest {
                     .post("usuarios")
                 .then()
                     .statusCode(HttpStatus.SC_CREATED)
-                    .log().all();
+                    .log().all()
+                    .and().extract().response();
+        JsonPath jsonPath = response.jsonPath();
+        String message = jsonPath.get("message");
+        Assertions.assertEquals(message, "Cadastro realizado com sucesso");
     }
 
     @Test
